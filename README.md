@@ -13,7 +13,7 @@ Cities covered: **Islamabad, Lahore, Karachi, Peshawar, Quetta, Multan, Faisalab
 
 ### Dashboard — Live Weather Cards
 
-![PakWeather Dashboard](screenshots/dashboard.png)
+![PakWeather Dashboard](dashboard.png)
 
 > 8 city weather cards served via Application Load Balancer. Data refreshes every 30 minutes from Open-Meteo API via a systemd timer on each EC2 instance.
 
