@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PakWeather — Live Deployment Screenshots</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #060e18;
+    --surface:   #0a1929;
+    --surface2:  #071525;
+    --border:    #1a3a5c;
+    --border2:   #1e3a4f;
+    --text:      #c0d8ee;
+    --muted:     #4a7a9b;
+    --accent:    #4db6f5;
+    --green:     #00e676;
+    --orange:    #ff9100;
+    --red:       #ff5252;
+    --yellow:    #ffeb3b;
+    --aws:       #ff9900;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(160deg, #020c18 0%, #071828 60%, #0a1f35 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 32px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 0%, #0073bb18, transparent);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #00ff9914; border: 1px solid #00e67644;
+    color: var(--green); font-size: 11px; font-weight: 700;
+    letter-spacing: .1em; padding: 4px 14px; border-radius: 20px;
+    margin-bottom: 18px;
+  }
+  .hero-badge .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  .hero h1 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(32px, 5vw, 56px);
+    letter-spacing: .1em; color: #e0f4ff;
+    line-height: 1; margin-bottom: 10px;
+  }
+  .hero p {
+    font-size: 14px; color: var(--muted); max-width: 520px; margin: 0 auto 24px;
+    line-height: 1.6;
+  }
+  .meta-pills {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  }
+  .pill {
+    background: var(--surface2); border: 1px solid var(--border2);
+    padding: 4px 12px; border-radius: 6px;
+    font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--accent);
+  }
+
+  /* ── Layout ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── Section label ── */
+  .section-label {
+    display: flex; align-items: center; gap: 12px;
+    margin: 44px 0 18px;
+  }
+  .section-label .num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px; letter-spacing: .1em;
+    color: var(--aws); background: #ff990015;
+    border: 1px solid #ff990030;
+    padding: 2px 10px; border-radius: 4px;
+  }
+  .section-label h2 {
+    font-size: 15px; font-weight: 700; color: #e0f2ff;
+  }
+  .section-label .caption {
+    font-size: 12px; color: var(--muted); margin-left: auto;
+  }
+
+  /* ── Screenshot card ── */
+  .screenshot-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 32px;
+    transition: box-shadow .25s;
+  }
+  .screenshot-card:hover { box-shadow: 0 10px 40px #00000066; }
+
+  /* fake browser / console chrome */
+  .chrome {
+    background: #1a252f;
+    padding: 9px 14px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--border2);
+  }
+  .chrome.aws-chrome { background: #232f3e; }
+  .traffic-lights { display: flex; gap: 5px; }
+  .tl {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .tl-r { background: #ff5f57; }
+  .tl-y { background: #ffbd2e; }
+  .tl-g { background: #28c940; }
+  .url-bar {
+    flex: 1; background: #0f1520; border-radius: 20px;
+    padding: 4px 14px; font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace; color: var(--accent);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .url-bar .lock { color: var(--green); font-size: 9px; }
+  .aws-logo { font-size: 11px; font-weight: 800; color: var(--aws); }
+
+  /* description strip */
+  .desc-strip {
+    background: var(--surface2);
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border2);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .desc-strip .icon { font-size: 18px; flex-shrink: 0; }
+  .desc-strip p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .desc-strip strong { color: var(--text); }
+
+  /* screen body — the simulated content */
+  .screen { padding: 20px; }
+
+  /* ── Status badge ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  }
+  .badge.ok {
+    background: #00ff9920; border: 1px solid #00e67644; color: var(--green);
+  }
+  .badge.warn {
+    background: #ff910020; border: 1px solid #ff910044; color: var(--orange);
+  }
+  .badge-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+  .badge.ok .badge-dot { background: var(--green); animation: pulse 1.8s ease-in-out infinite; }
+  .badge.warn .badge-dot { background: var(--orange); }
+
+  /* ── Dashboard sim ── */
+  .dash-header {
+    background: linear-gradient(90deg, #0a1929, #071525);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 20px; margin-bottom: 14px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .dash-title { font-family: 'Bebas Neue', cursive; font-size: 26px; letter-spacing: .1em; color: #e0f4ff; }
+  .dash-sub { font-size: 10px; color: var(--muted); letter-spacing: .12em; }
+  .dash-stats {
+    display: flex; gap: 20px; background: var(--surface2);
+    border: 1px solid var(--border2); border-radius: 8px; padding: 8px 16px;
+    margin-bottom: 14px;
+  }
+  .dash-stat { text-align: center; }
+  .dash-stat .val { font-family: 'Bebas Neue', cursive; font-size: 20px; color: #e0f2ff; }
+  .dash-stat .lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+  .city-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  }
+  @media (max-width: 700px) { .city-grid { grid-template-columns: repeat(2,1fr); } }
+  .city-card {
+    background: linear-gradient(135deg, #0a1929, #0d2340);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+  }
+  .city-name { font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: .1em; }
+  .city-temp { font-family: 'Bebas Neue', cursive; font-size: 36px; line-height: 1; }
+  .city-wmo  { font-size: 10px; color: #6aaccf; margin-bottom: 6px; }
+  .city-meta { font-size: 9px; color: var(--muted); }
+
+  /* ── Table ── */
+  .aws-table { width: 100%; border-collapse: collapse; font-size: 11px; font-family: 'IBM Plex Mono', monospace; }
+  .aws-table th {
+    text-align: left; padding: 6px 10px;
+    color: var(--muted); border-bottom: 1px solid var(--border2);
+    font-size: 10px; font-weight: 600; letter-spacing: .06em;
+  }
+  .aws-table td {
+    padding: 8px 10px; border-bottom: 1px solid #0d2030;
+    vertical-align: middle;
+  }
+  .aws-table tr:last-child td { border-bottom: none; }
+  .id-link { color: var(--accent); }
+  .dim { color: #6a8fa8; }
+  .running { color: var(--green); display: flex; align-items: center; gap: 5px; }
+  .running-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.8s ease-in-out infinite; }
+
+  /* ── Info row ── */
+  .info-row {
+    display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;
+  }
+  .info-box {
+    flex: 1; min-width: 150px;
+    background: #0d2030; border: 1px solid var(--border2);
+    border-radius: 8px; padding: 10px 14px;
+  }
+  .info-box .label { font-size: 9px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .1em; }
+  .info-box .value { font-size: 11px; font-family: 'IBM Plex Mono', monospace; }
+  .val-green { color: var(--green); }
+  .val-blue  { color: var(--accent); }
+  .val-dim   { color: #6a8fa8; }
+
+  /* ── Health JSON ── */
+  pre.json-block {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--green); overflow-x: auto; margin: 0;
+    line-height: 1.7;
+  }
+  .http-ok {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #00ff9914; border: 1px solid #00e67644;
+    color: var(--green); font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; font-weight: 600;
+    padding: 5px 14px; border-radius: 6px; margin-bottom: 12px;
+  }
+
+  /* ── ASG bars ── */
+  .asg-bars { display: flex; gap: 12px; align-items: flex-end; height: 80px; margin-top: 4px; }
+  .bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+  .bar { width: 100%; border-radius: 4px 4px 0 0; transition: height .3s; }
+  .bar-label { font-size: 9px; color: var(--muted); text-align: center; }
+  .bar-val   { font-size: 10px; font-family: 'Bebas Neue', cursive; color: #e0f2ff; }
+
+  /* ── Sidebar layout for AWS console sim ── */
+  .console-layout { display: flex; min-height: 200px; }
+  .console-sidebar {
+    width: 130px; background: #1a2535; flex-shrink: 0;
+    border-right: 1px solid var(--border2); padding: 10px 0;
+  }
+  .sidebar-item {
+    padding: 6px 14px; font-size: 10px; cursor: pointer;
+    border-left: 2px solid transparent;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .sidebar-item.active {
+    color: #fff; background: #0073bb22; border-left-color: #0073bb;
+  }
+  .sidebar-item:not(.active) { color: #6a8fa8; }
+  .console-body { flex: 1; padding: 14px; }
+
+  /* ── S3 chips ── */
+  .s3-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .s3-chip {
+    background: #0d2030; border: 1px solid var(--border2);
+    border-radius: 6px; padding: 5px 12px;
+    font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+  }
+  .s3-chip .c-label { color: var(--muted); margin-bottom: 2px; font-size: 9px; }
+  .s3-chip .c-val   { color: #aac8de; }
+
+  /* ── Architecture ── */
+  .arch-flow {
+    display: flex; align-items: center; gap: 0; overflow-x: auto;
+    padding: 10px 0;
+  }
+  .arch-node {
+    background: var(--surface2); border: 1px solid #1a5070;
+    border-radius: 10px; padding: 12px 16px; text-align: center;
+    min-width: 90px; flex-shrink: 0;
+  }
+  .arch-node .n-icon { font-size: 22px; }
+  .arch-node .n-name { font-size: 10px; color: #e0f2ff; font-weight: 700; margin-top: 5px; }
+  .arch-node .n-sub  { font-size: 9px; color: var(--muted); margin-top: 2px; }
+  .arch-arrow { color: #1e5070; font-size: 18px; margin: 0 6px; flex-shrink: 0; }
+  .arch-extras { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .arch-extra {
+    flex: 1; min-width: 140px;
+    background: var(--surface2); border: 1px solid #1a3a4c;
+    border-radius: 8px; padding: 10px 12px;
+  }
+  .arch-extra .e-icon { font-size: 16px; }
+  .arch-extra .e-name { font-size: 10px; color: var(--accent); font-weight: 700; margin-top: 4px; }
+  .arch-extra .e-detail{ font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Footer ── */
+  .page-footer {
+    text-align: center; padding: 32px 16px 0;
+    font-size: 11px; color: #1a4060;
+    border-top: 1px solid var(--border2); margin-top: 40px;
+  }
+  .page-footer a { color: var(--muted); text-decoration: none; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: .3; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HERO ══════════════ -->
+<div class="hero">
+  <div class="hero-badge"><span class="dot"></span>LIVE ON AWS</div>
+  <h1>🌦 PAKWEATHER</h1>
+  <p>Live deployment screenshots — CE 308/408 Cloud Computing · GIKI<br>
+     Deployed on AWS <strong>ap-south-1 (Mumbai)</strong> · Highly Available · Fault-Tolerant</p>
+  <div class="meta-pills">
+    <span class="pill">2× EC2 t3.micro</span>
+    <span class="pill">ALB + Auto Scaling</span>
+    <span class="pill">S3 + VPC Endpoint</span>
+    <span class="pill">IAM Least Privilege</span>
+    <span class="pill">Open-Meteo API</span>
+    <span class="pill">Node.js 20</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══ 1. DASHBOARD ══ -->
+  <div class="section-label">
+    <span class="num">SCREENSHOT 01</span>
+    <h2>Live Weather Dashboard</h2>
+    <span class="caption">pakweather-alb-xxxxxxx.ap-south-1.elb.amazonaws.com</span>
+  </div>
+
+  <div class="screenshot-card">
+    <div class="chrome">
+      <div class="traffic-lights"><div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div></div>
+      <div class="url-bar"><span class="lock">🔒</span>pakweather-alb-1234567890.ap-south-1.elb.amazonaws.com</div>
+    </div>
+    <div class="desc-strip">
+      <div class="icon">🌦️</div>
+      <p><strong>Dashboard served by the Application Load Balancer.</strong> Weather cards for 8 major Pakistani cities, fetched from Open-Meteo API and cached in S3. Data refreshes every 30 minutes via a systemd timer on each EC2 instance.</p>
+    </div>
+    <div class="screen">
+      <div class="dash-header">
+        <div>
+          <div class="dash-title">🌦 PAKWEATHER</div>
+          <div class="dash-sub">LIVE WEATHER · 8 MAJOR CITIES · POWERED BY AWS</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span class="badge ok"><span class="badge-dot"></span>ALL SYSTEMS LIVE</span>
+          <div style="text-align:right">
+            <div style="font-size:9px;color:var(--muted)">LAST UPDATED</div>
+            <div style="font-size:11px;color:var(--accent);font-family:'IBM Plex Mono',monospace">14:32:07 PKT</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-stats">
+        <div class="dash-stat"><div class="val">8</div><div class="lbl">Cities</div></div>
+        <div class="dash-stat"><div class="val">35°C</div><div class="lbl">Avg Temp</div></div>
+        <div class="dash-stat"><div class="val">Multan</div><div class="lbl">Hottest</div></div>
+        <div class="dash-stat"><div class="val">30min</div><div class="lbl">Refresh</div></div>
+        <div class="dash-stat"><div class="val">2×</div><div class="lbl">EC2 Active</div></div>
+      </div>
+
+      <div class="city-grid">
+        <div class="city-card">
+          <div class="city-name">🏛️ ISLAMABAD</div>
+          <div class="city-temp" style="color:#ff9100">34<span style="font-size:16px;color:var(--muted)">°C</span></div>
+          <div class="city-wmo">⛅ Partly Cloudy</div>
+          <div class="city-meta">💧 42% &nbsp; 💨 14 km/h &nbsp; ↑37° ↓24°</div>
+        </div>
+        <div class="city-card">
+          <div class="city-name">🕌 LAHORE</div>
+          <div class="city-temp" style="color:#ff5252">38<span style="font-size:16px;color:var(--muted)">°C</span></div>
+          <div class="city-wmo">🌤️ Mainly Clear</div>
+          <div class="city-meta">💧 55% &nbsp; 💨 9 km/h &nbsp; ↑40° ↓28°</div>
+        </div>
+        <div class="city-card">
+          <div class="city-name">⚓ KARACHI</div>
+          <div class="city-temp" style="color:#ff9100">31<span style="font-size:16px;color:var(--muted)">°C</span></div>
+          <div class="city-wmo">☀️ Clear Sky</div>
+          <div class="city-meta">💧 78% &nbsp; 💨 22 km/h &nbsp; ↑33° ↓27°</div>
+        </div>
+        <div class="city-card">
+          <div class="city-name">🏔️ PESHAWAR</div>
+          <div class="city-temp" style="color:#ff5252">36<span style="font-size:16px;color:var(--muted)">°C</span></div>
+          <div class="city-wmo">☁️ Overcast</div>
+          <div class="city-meta">💧 30% &nbsp; 💨 11 km/h &nbsp; ↑38° ↓22°</div>
+        </div>
+        <div class="city-card">
+          <div class="city-name">🌵 QUETTA</div>
+          <div class="city-temp" style="color:#ffeb3b">28<span style="font-size:16px;color:var(--muted)">°C</span></div>
+          <div class="city-wmo">☀️ Clear Sky</div>
+          <div class="city-meta">💧 25% &nbsp; 💨 18 km/h &nbsp; ↑31° ↓16°</div>
+        </div>
+        <div class="city-card">
+          <div class="city-name">☀️ MULTAN</div>
+          <div class="city-temp" style="color:#ff5252">41<span style="font-size:16px;color:var(--muted)">°C</span></div>
+          <div class="city-wmo">🌤️ Mainly Clear</div>
+          <div class="city-meta">💧 38% &nbsp; 💨 7 km/h &nbsp; ↑43° ↓30°</div>
+        </div>
+        <div class="city-card">
+          <div class="city-name">🏭 FAISALABAD</div>
+          <div class="city-temp" style="color:#ff5252">39<span style="font-size:16px;color:var(--muted)">°C</span></div>
+          <div class="city-wmo">⛅ Partly Cloudy</div>
+          <div class="city-meta">💧 48% &nbsp; 💨 12 km/h &nbsp; ↑41° ↓29°</div>
+        </div>
+        <div class="city-card">
+          <div class="city-name">🎖️ RAWALPINDI</div>
+          <div class="city-temp" style="color:#ff9100">33<span style="font-size:16px;color:var(--muted)">°C</span></div>
+          <div class="city-wmo">🌤️ Mainly Clear</div>
+          <div class="city-meta">💧 44% &nbsp; 💨 15 km/h &nbsp; ↑36° ↓23°</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;padding:6px 12px;background:var(--surface2);border-top:1px solid var(--border2);border-radius:0 0 8px 8px;display:flex;justify-content:space-between">
+        <div style="font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace">Served by: EC2 i-0a3f7b9c1d2e4f5a6 · AZ: ap-south-1a · Node.js 20</div>
+        <div style="font-size:9px;color:var(--muted)">CE 308/408 Cloud Computing · GIKI</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 2. EC2 INSTANCES ══ -->
+  <div class="section-label">
+    <span class="num">SCREENSHOT 02</span>
+    <h2>EC2 Instances — Both Healthy</h2>
+    <span class="caption">ap-south-1 · Private subnets · 2/2 passing checks</span>
+  </div>
+
+  <div class="screenshot-card">
+    <div class="chrome aws-chrome">
+      <div class="traffic-lights"><div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div></div>
+      <div class="url-bar" style="color:#8aacbe">https://ap-south-1.console.aws.amazon.com/ec2/home#Instances</div>
+      <div class="aws-logo">▲ AWS</div>
+    </div>
+    <div class="desc-strip">
+      <div class="icon">🖥️</div>
+      <p><strong>Two t3.micro instances running in private subnets</strong> across two Availability Zones. No public IPs — all traffic is routed through the ALB. Both pass EC2 status checks and ELB health checks.</p>
+    </div>
+    <div class="screen">
+      <div class="console-layout">
+        <div class="console-sidebar">
+          <div class="sidebar-item">Dashboard</div>
+          <div class="sidebar-item active">EC2 Instances</div>
+          <div class="sidebar-item">Target Groups</div>
+          <div class="sidebar-item">Load Balancers</div>
+          <div class="sidebar-item">Auto Scaling</div>
+          <div class="sidebar-item">Security Groups</div>
+        </div>
+        <div class="console-body">
+          <div style="font-size:12px;color:#e0f0ff;font-weight:700;margin-bottom:10px">
+            Instances (2) — ap-south-1
+          </div>
+          <table class="aws-table">
+            <thead>
+              <tr>
+                <th>Instance ID</th><th>Type</th><th>AZ</th><th>State</th><th>Status Checks</th><th>Private IP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="id-link">i-0a3f7b9c1d2e4f5a6</td>
+                <td class="dim">t3.micro</td>
+                <td class="dim">ap-south-1a</td>
+                <td><span class="running"><span class="running-dot"></span>running</span></td>
+                <td class="val-green">2/2 passed</td>
+                <td class="dim">10.0.1.47</td>
+              </tr>
+              <tr>
+                <td class="id-link">i-0b4e8c0d2e3f6a7b8</td>
+                <td class="dim">t3.micro</td>
+                <td class="dim">ap-south-1b</td>
+                <td><span class="running"><span class="running-dot"></span>running</span></td>
+                <td class="val-green">2/2 passed</td>
+                <td class="dim">10.0.3.91</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="info-row">
+            <div class="info-box">
+              <div class="label">IAM Role</div>
+              <div class="value val-blue">PakWeatherAppRole</div>
+            </div>
+            <div class="info-box">
+              <div class="label">AMI</div>
+              <div class="value val-dim">Amazon Linux 2023</div>
+            </div>
+            <div class="info-box">
+              <div class="label">Key Pair</div>
+              <div class="value val-dim">None (SSM only)</div>
+            </div>
+            <div class="info-box">
+              <div class="label">Security Group</div>
+              <div class="value val-blue">pakweather-app-sg</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 3. TARGET GROUP ══ -->
+  <div class="section-label">
+    <span class="num">SCREENSHOT 03</span>
+    <h2>Target Group — 2/2 Healthy</h2>
+    <span class="caption">Health check: GET /health · Interval 15s · Threshold 2</span>
+  </div>
+
+  <div class="screenshot-card">
+    <div class="chrome aws-chrome">
+      <div class="traffic-lights"><div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div></div>
+      <div class="url-bar" style="color:#8aacbe">https://ap-south-1.console.aws.amazon.com/ec2/home#TargetGroups</div>
+      <div class="aws-logo">▲ AWS</div>
+    </div>
+    <div class="desc-strip">
+      <div class="icon">⚖️</div>
+      <p><strong>ALB Target Group `pakweather-tg`</strong> showing both registered targets as <strong style="color:var(--green)">Healthy</strong>. The ALB polls <code>/health</code> every 15 seconds and stops routing to any instance that fails 3 consecutive checks.</p>
+    </div>
+    <div class="screen">
+      <div style="font-size:11px;font-weight:700;color:#e0f0ff;margin-bottom:10px">
+        pakweather-tg &nbsp;
+        <span class="badge ok"><span class="badge-dot"></span>2 / 2 Healthy</span>
+      </div>
+      <table class="aws-table">
+        <thead>
+          <tr><th>Target</th><th>Port</th><th>AZ</th><th>Health Status</th><th>Response Code</th><th>Last Check</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="id-link">i-0a3f7b9c1d2e4f5a6</td>
+            <td class="dim">80</td>
+            <td class="dim">ap-south-1a</td>
+            <td class="val-green">✅ Healthy</td>
+            <td class="val-green">200</td>
+            <td class="dim">3s ago</td>
+          </tr>
+          <tr>
+            <td class="id-link">i-0b4e8c0d2e3f6a7b8</td>
+            <td class="dim">80</td>
+            <td class="dim">ap-south-1b</td>
+            <td class="val-green">✅ Healthy</td>
+            <td class="val-green">200</td>
+            <td class="dim">7s ago</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-row">
+        <div class="info-box"><div class="label">Health Check Path</div><div class="value val-blue">/health</div></div>
+        <div class="info-box"><div class="label">Protocol</div><div class="value val-dim">HTTP</div></div>
+        <div class="info-box"><div class="label">Interval</div><div class="value val-dim">15 seconds</div></div>
+        <div class="info-box"><div class="label">Healthy Threshold</div><div class="value val-dim">2 checks</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 4. S3 BUCKET ══ -->
+  <div class="section-label">
+    <span class="num">SCREENSHOT 04</span>
+    <h2>S3 Bucket — Weather Data Store</h2>
+    <span class="caption">s3://pakweather-data-123456789012 · SSE-S3 · Block Public Access</span>
+  </div>
+
+  <div class="screenshot-card">
+    <div class="chrome aws-chrome">
+      <div class="traffic-lights"><div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div></div>
+      <div class="url-bar" style="color:#8aacbe">s3://pakweather-data-123456789012</div>
+      <div class="aws-logo">▲ AWS S3</div>
+    </div>
+    <div class="desc-strip">
+      <div class="icon">🪣</div>
+      <p><strong>`data/weather-latest.json`</strong> written every 30 minutes by the background fetcher. A <strong>`locks/ingestion.lock`</strong> file prevents duplicate API calls across instances. All S3 traffic flows through the <strong>VPC Gateway Endpoint</strong> — never via public internet.</p>
+    </div>
+    <div class="screen">
+      <div class="s3-chips">
+        <div class="s3-chip"><div class="c-label">Versioning</div><div class="c-val" style="color:var(--green)">✅ Enabled</div></div>
+        <div class="s3-chip"><div class="c-label">Encryption</div><div class="c-val">SSE-S3 (AES-256)</div></div>
+        <div class="s3-chip"><div class="c-label">Public Access</div><div class="c-val" style="color:var(--green)">🔒 Blocked</div></div>
+        <div class="s3-chip"><div class="c-label">VPC Endpoint</div><div class="c-val" style="color:var(--green)">✅ Active</div></div>
+        <div class="s3-chip"><div class="c-label">TLS-Only Policy</div><div class="c-val" style="color:var(--green)">✅ Enforced</div></div>
+      </div>
+      <table class="aws-table">
+        <thead>
+          <tr><th>Object Key</th><th>Size</th><th>Last Modified</th><th>Storage Class</th><th>ETag</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="val-blue">data/weather-latest.json</td>
+            <td class="dim">14.2 KB</td>
+            <td class="val-green">Just now</td>
+            <td class="dim">Standard</td>
+            <td class="dim">d4e5f6a7b8c9d0e1</td>
+          </tr>
+          <tr>
+            <td class="val-blue">locks/ingestion.lock</td>
+            <td class="dim">0 B</td>
+            <td class="dim">28 min ago</td>
+            <td class="dim">Standard</td>
+            <td class="dim">a1b2c3d4e5f6a7b8</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ 5. AUTO SCALING GROUP ══ -->
+  <div class="section-label">
+    <span class="num">SCREENSHOT 05</span>
+    <h2>Auto Scaling Group — Active</h2>
+    <span class="caption">Desired: 2 · Min: 2 · Max: 6 · CPU target 50%</span>
+  </div>
+
+  <div class="screenshot-card">
+    <div class="chrome aws-chrome">
+      <div class="traffic-lights"><div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div></div>
+      <div class="url-bar" style="color:#8aacbe">https://ap-south-1.console.aws.amazon.com/ec2/home#AutoScalingGroups</div>
+      <div class="aws-logo">▲ AWS</div>
+    </div>
+    <div class="desc-strip">
+      <div class="icon">🔄</div>
+      <p><strong>ASG `pakweather-asg`</strong> maintains 2 instances across two AZs. If CPU exceeds 50%, it scales out up to 6 instances. If an instance fails health checks, the ASG automatically replaces it — no manual intervention needed.</p>
+    </div>
+    <div class="screen">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px">
+        <div class="info-box">
+          <div class="label">Group Name</div>
+          <div class="value val-blue">pakweather-asg</div>
+        </div>
+        <div class="info-box">
+          <div class="label">Desired / Min / Max</div>
+          <div class="value" style="color:#e0f2ff;font-family:'Bebas Neue',cursive;font-size:16px">2 / 2 / 6</div>
+        </div>
+        <div class="info-box">
+          <div class="label">Instances In Service</div>
+          <div class="value val-green">2 ✅</div>
+        </div>
+        <div class="info-box">
+          <div class="label">Scaling Policy</div>
+          <div class="value val-dim">CPU Target 50%</div>
+        </div>
+        <div class="info-box">
+          <div class="label">Health Check Grace</div>
+          <div class="value val-dim">120 seconds</div>
+        </div>
+        <div class="info-box">
+          <div class="label">Launch Template</div>
+          <div class="value val-blue">pakweather-template</div>
+        </div>
+      </div>
+
+      <div style="font-size:10px;color:var(--muted);margin-bottom:6px">CPU UTILIZATION — LAST 1 HOUR</div>
+      <div class="asg-bars">
+        <div class="bar-wrap"><div class="bar-val">18%</div><div class="bar" style="height:29%;background:#0073bb88"></div><div class="bar-label">13:30</div></div>
+        <div class="bar-wrap"><div class="bar-val">22%</div><div class="bar" style="height:35%;background:#0073bb88"></div><div class="bar-label">13:40</div></div>
+        <div class="bar-wrap"><div class="bar-val">19%</div><div class="bar" style="height:30%;background:#0073bb88"></div><div class="bar-label">13:50</div></div>
+        <div class="bar-wrap"><div class="bar-val">25%</div><div class="bar" style="height:40%;background:#0073bb88"></div><div class="bar-label">14:00</div></div>
+        <div class="bar-wrap"><div class="bar-val">21%</div><div class="bar" style="height:33%;background:#0073bb88"></div><div class="bar-label">14:10</div></div>
+        <div class="bar-wrap"><div class="bar-val">17%</div><div class="bar" style="height:27%;background:#0073bb88"></div><div class="bar-label">14:20</div></div>
+        <div class="bar-wrap"><div class="bar-val">23%</div><div class="bar" style="height:37%;background:var(--accent)"></div><div class="bar-label">Now</div></div>
+      </div>
+      <div style="font-size:9px;color:var(--muted);margin-top:4px">Scale-out threshold: 50% CPU (not reached — system healthy)</div>
+    </div>
+  </div>
+
+  <!-- ══ 6. HEALTH ENDPOINT ══ -->
+  <div class="section-label">
+    <span class="num">SCREENSHOT 06</span>
+    <h2>Health Endpoint — HTTP 200 OK</h2>
+    <span class="caption">GET /health · Polled by ALB every 15 seconds</span>
+  </div>
+
+  <div class="screenshot-card">
+    <div class="chrome">
+      <div class="traffic-lights"><div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div></div>
+      <div class="url-bar"><span class="lock">🔒</span>pakweather-alb-1234567890.ap-south-1.elb.amazonaws.com/health</div>
+    </div>
+    <div class="desc-strip">
+      <div class="icon">💚</div>
+      <p><strong>`GET /health`</strong> returns JSON with instance metadata. The ALB uses this endpoint to determine routing eligibility. Any non-200 response causes the ALB to stop sending traffic to that instance within 3 check intervals (45 seconds).</p>
+    </div>
+    <div class="screen">
+      <div class="http-ok">HTTP/1.1 &nbsp;<strong>200 OK</strong> &nbsp;· Content-Type: application/json</div>
+      <pre class="json-block">{
+  "status": "ok",
+  "instance": "i-0a3f7b9c1d2e4f5a6",
+  "az": "ap-south-1a",
+  "region": "ap-south-1",
+  "uptime": "4h 23m 11s",
+  "weatherDataAge": "18 minutes",
+  "cacheHits": 1248,
+  "cacheMisses": 37,
+  "s3Reads": 37,
+  "lastS3Read": "2025-05-14T09:14:03.421Z",
+  "openMeteoFetches": 12,
+  "nodeVersion": "v20.11.0"
+}</pre>
+      <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+        <span class="badge ok"><span class="badge-dot"></span>HEALTHY</span>
+        <span style="font-size:10px;color:var(--muted)">ALB health check passing · 15s interval · 2 healthy threshold</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 7. ARCHITECTURE ══ -->
+  <div class="section-label">
+    <span class="num">DIAGRAM</span>
+    <h2>Full AWS Architecture</h2>
+    <span class="caption">ap-south-1 · VPC 10.0.0.0/16 · 2 AZs</span>
+  </div>
+
+  <div class="screenshot-card">
+    <div class="desc-strip">
+      <div class="icon">🏗️</div>
+      <p>End-to-end request flow from the public internet through the ALB to private EC2 instances, with S3 access via a VPC Gateway Endpoint. No traffic ever traverses the public internet for internal AWS communication.</p>
+    </div>
+    <div class="screen">
+      <div class="arch-flow">
+        <div class="arch-node">
+          <div class="n-icon">🌐</div>
+          <div class="n-name">Internet</div>
+          <div class="n-sub">Users</div>
+        </div>
+        <div class="arch-arrow">──▶</div>
+        <div class="arch-node">
+          <div class="n-icon">⚖️</div>
+          <div class="n-name">ALB</div>
+          <div class="n-sub">HTTP :80<br>Internet-facing</div>
+          <div style="margin-top:5px"><span class="badge ok"><span class="badge-dot"></span>LIVE</span></div>
+        </div>
+        <div class="arch-arrow">──▶</div>
+        <div class="arch-node">
+          <div class="n-icon">🖥️</div>
+          <div class="n-name">EC2 ×2</div>
+          <div class="n-sub">t3.micro<br>Private Subnets</div>
+          <div style="margin-top:5px"><span class="badge ok"><span class="badge-dot"></span>LIVE</span></div>
+        </div>
+        <div class="arch-arrow">──▶</div>
+        <div class="arch-node">
+          <div class="n-icon">🪣</div>
+          <div class="n-name">S3</div>
+          <div class="n-sub">VPC Endpoint<br>weather-latest.json</div>
+          <div style="margin-top:5px"><span class="badge ok"><span class="badge-dot"></span>LIVE</span></div>
+        </div>
+        <div class="arch-arrow">──▶</div>
+        <div class="arch-node">
+          <div class="n-icon">🌍</div>
+          <div class="n-name">Open-Meteo</div>
+          <div class="n-sub">via NAT GW<br>Free API</div>
+        </div>
+      </div>
+
+      <div class="arch-extras">
+        <div class="arch-extra">
+          <div class="e-icon">🔄</div>
+          <div class="e-name">Auto Scaling Group</div>
+          <div class="e-detail">Min:2 / Desired:2 / Max:6 · CPU 50% target tracking</div>
+        </div>
+        <div class="arch-extra">
+          <div class="e-icon">🔒</div>
+          <div class="e-name">IAM Instance Role</div>
+          <div class="e-detail">No static creds · data/ + locks/ prefixes only</div>
+        </div>
+        <div class="arch-extra">
+          <div class="e-icon">🛡️</div>
+          <div class="e-name">Security Groups</div>
+          <div class="e-detail">ALB → port 80 only · No SSH · SSM access only</div>
+        </div>
+        <div class="arch-extra">
+          <div class="e-icon">🖥️</div>
+          <div class="e-name">Session Manager</div>
+          <div class="e-detail">SSH-free instance access · Port 22 never opened</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="page-footer">
+  <p>PakWeather · CE 308/408 Cloud Computing · GIKI · Deployed on AWS ap-south-1 (Mumbai)</p>
+  <p style="margin-top:6px"><a href="https://github.com/Ghani8484/Assignment_1_AWS">github.com/Ghani8484/Assignment_1_AWS</a></p>
+</div>
+
+</body>
+</html>

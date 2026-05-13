@@ -7,6 +7,58 @@ Cities covered: **Islamabad, Lahore, Karachi, Peshawar, Quetta, Multan, Faisalab
 
 ---
 
+## 🟢 Live Deployment Screenshots
+
+> The app is deployed and running on AWS `ap-south-1` (Mumbai). Screenshots below show the live system.
+
+### Dashboard — Live Weather Cards
+
+![PakWeather Dashboard](screenshots/dashboard.png)
+
+> 8 city weather cards served via Application Load Balancer. Data refreshes every 30 minutes from Open-Meteo API via a systemd timer on each EC2 instance.
+
+---
+
+### EC2 Instances — Both Healthy
+
+![EC2 Instances](screenshots/ec2-instances.png)
+
+> Two `t3.micro` instances running in **private subnets** across two Availability Zones (`ap-south-1a` and `ap-south-1b`). Both pass EC2 + ELB health checks.
+
+---
+
+### Target Group — 2/2 Targets Healthy
+
+![Target Group](screenshots/target-group.png)
+
+> ALB Target Group `pakweather-tg` with health check path `/health`. Both targets report **Healthy** status. The ALB stops routing to any instance that fails 3 consecutive checks.
+
+---
+
+### S3 Bucket — Weather Data Object
+
+![S3 Bucket](screenshots/s3-bucket.png)
+
+> `data/weather-latest.json` written by the background fetcher. S3 Versioning enabled, Block Public Access on, encrypted with SSE-S3. All EC2 traffic reaches S3 through the **VPC Gateway Endpoint** — never via public internet.
+
+---
+
+### Auto Scaling Group — Active
+
+![Auto Scaling Group](screenshots/asg.png)
+
+> ASG `pakweather-asg`: Desired **2**, Min **2**, Max **6**. Target tracking policy scales on CPU ≥ 50%. Instances launch into private subnets and register automatically with the target group.
+
+---
+
+### Health Endpoint — JSON Response
+
+![Health Endpoint](screenshots/health-endpoint.png)
+
+> `GET /health` returns `HTTP 200` with instance metadata. The ALB polls this every 15 seconds to determine routing eligibility.
+
+---
+
 ## Architecture Overview
 
 ```
@@ -51,7 +103,7 @@ Internet
 **AWS Services Used:**
 
 | Service | Purpose |
-|---|---|
+| --- | --- |
 | VPC | Network isolation with public + private subnets |
 | EC2 (t3.micro × 2) | Application servers in private subnets |
 | Application Load Balancer | Single public entry point, health-check routing |
@@ -78,8 +130,7 @@ Internet
 
 Go to **S3 → Create bucket**:
 
-- **Name:** `pakweather-data-<your-12-digit-account-id>`
-  *(Find your account ID in the top-right corner of the AWS console)*
+- **Name:** `pakweather-data-<your-12-digit-account-id>` *(Find your account ID in the top-right corner of the AWS console)*
 - **Region:** `ap-south-1`
 - **Block Public Access:** ✅ all four boxes ticked
 - **Versioning:** ✅ Enabled
@@ -99,7 +150,7 @@ After creating the bucket, apply the bucket policy:
 Go to **VPC → Create VPC → "VPC and more"** (the wizard):
 
 | Setting | Value |
-|---|---|
+| --- | --- |
 | Name tag | `pakweather` |
 | IPv4 CIDR | `10.0.0.0/16` |
 | Availability Zones | **2** |
@@ -166,7 +217,7 @@ Go to **VPC → Security Groups → Create security group** (create two):
 Go to **EC2 → Launch Templates → Create launch template**:
 
 | Setting | Value |
-|---|---|
+| --- | --- |
 | Name | `pakweather-template` |
 | AMI | Amazon Linux 2023 (search in Quick Start, choose 64-bit x86) |
 | Instance type | `t3.micro` |
@@ -191,7 +242,7 @@ Click **Create launch template**.
 Go to **EC2 → Target Groups → Create target group**:
 
 | Setting | Value |
-|---|---|
+| --- | --- |
 | Target type | Instances |
 | Name | `pakweather-tg` |
 | Protocol | HTTP |
@@ -210,7 +261,7 @@ Click **Next → Create target group** (no manual instance registration needed �
 Go to **EC2 → Load Balancers → Create load balancer → Application Load Balancer**:
 
 | Setting | Value |
-|---|---|
+| --- | --- |
 | Name | `pakweather-alb` |
 | Scheme | Internet-facing |
 | IP address type | IPv4 |
@@ -247,7 +298,7 @@ Go to **EC2 → Auto Scaling Groups → Create Auto Scaling group**:
 **Step 4 — Group size and scaling:**
 
 | Setting | Value |
-|---|---|
+| --- | --- |
 | Desired capacity | 2 |
 | Minimum capacity | 2 |
 | Maximum capacity | 6 |
@@ -360,7 +411,7 @@ Defense in depth across four layers:
 ## Fault Tolerance
 
 | Failure Scenario | System Behavior |
-|---|---|
+| --- | --- |
 | One EC2 instance crashes | ALB health check detects unhealthy → stops routing to it → ASG launches a replacement in the same AZ |
 | Entire Availability Zone goes offline | ALB routes only to the surviving AZ → ASG launches replacement instances there |
 | Open-Meteo API is unreachable | Background fetch fails gracefully; app continues serving the **last successful data** from S3 |
@@ -375,7 +426,7 @@ Defense in depth across four layers:
 Approximate monthly cost in Mumbai (`ap-south-1`), on-demand pricing:
 
 | Component | Monthly Cost |
-|---|---|
+| --- | --- |
 | 2× t3.micro EC2 (24/7) | ~$8 |
 | Application Load Balancer | ~$18 |
 | 1× NAT Gateway | ~$32 |
@@ -409,16 +460,16 @@ Delete resources in this exact order to avoid dependency errors:
 1. Confirm `pakweather-app-sg` inbound allows HTTP (port 80) **from `pakweather-alb-sg`** (not from `0.0.0.0/0`)
 2. Confirm `pakweather-app-sg` outbound allows **all traffic** to `0.0.0.0/0`
 3. Connect to an instance via **Session Manager** and run:
-   ```bash
-   sudo systemctl status pakweather.service
-   sudo journalctl -u pakweather.service -n 50
-   sudo cat /var/log/pakweather-setup.log
-   ```
+
+```bash
+sudo systemctl status pakweather.service
+sudo journalctl -u pakweather.service -n 50
+sudo cat /var/log/pakweather-setup.log
+```
 
 ### Session Manager button is grey / "SSM Agent unable to acquire credentials"
 
 The instance cannot reach the internet. Check:
-
 1. The NAT Gateway status is **Available** and is in a **public** subnet
 2. Both **private** route tables have a route: `0.0.0.0/0 → nat-xxxxxxxx`
 3. `pakweather-app-sg` outbound allows all traffic to `0.0.0.0/0`
@@ -427,23 +478,27 @@ The instance cannot reach the internet. Check:
 
 1. Wait 1–2 minutes for the boot-time fetch to complete
 2. Connect via Session Manager and run:
-   ```bash
-   sudo journalctl -u pakweather-fetch.service -n 50
-   ```
+
+```bash
+sudo journalctl -u pakweather-fetch.service -n 50
+```
+
 3. Verify the S3 bucket name in the systemd unit matches your actual bucket:
-   ```bash
-   sudo systemctl cat pakweather-fetch.service
-   ```
+
+```bash
+sudo systemctl cat pakweather-fetch.service
+```
+
 4. Manually trigger a fetch:
-   ```bash
-   sudo systemctl start pakweather-fetch.service
-   sudo journalctl -u pakweather-fetch.service -f
-   ```
+
+```bash
+sudo systemctl start pakweather-fetch.service
+sudo journalctl -u pakweather-fetch.service -f
+```
 
 ### Auto Scaling Group keeps launching and terminating instances
 
 This means health checks are continuously failing. Check:
-
 1. The target group is attached to the ASG (ASG → **Integrations** tab)
 2. The health check grace period is at least **120 seconds** (the boot script needs time)
 3. `pakweather-app-sg` inbound allows port 80 from `pakweather-alb-sg`
@@ -460,6 +515,13 @@ pakweather/
 ├── policies/
 │   ├── iam-role-policy.json   # Least-privilege IAM inline policy
 │   └── s3-bucket-policy.json  # S3 bucket policy (TLS-only)
+├── screenshots/               # Live deployment screenshots
+│   ├── dashboard.png
+│   ├── ec2-instances.png
+│   ├── target-group.png
+│   ├── s3-bucket.png
+│   ├── asg.png
+│   └── health-endpoint.png
 ├── user-data.sh               # EC2 bootstrap script (paste into Launch Template)
 └── README.md                  # This file
 ```
