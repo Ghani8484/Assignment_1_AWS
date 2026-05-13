@@ -13,7 +13,7 @@ Cities covered: **Islamabad, Lahore, Karachi, Peshawar, Quetta, Multan, Faisalab
 
 ### Dashboard — Live Weather Cards
 
-![PakWeather Dashboard](dashboard.png)
+![PakWeather Dashboard](screenshots/dashboard.png)
 
 > 8 city weather cards served via Application Load Balancer. Data refreshes every 30 minutes from Open-Meteo API via a systemd timer on each EC2 instance.
 
@@ -27,35 +27,11 @@ Cities covered: **Islamabad, Lahore, Karachi, Peshawar, Quetta, Multan, Faisalab
 
 ---
 
-### Target Group — 2/2 Targets Healthy
-
-![Target Group](screenshots/target-group.png)
-
-> ALB Target Group `pakweather-tg` with health check path `/health`. Both targets report **Healthy** status. The ALB stops routing to any instance that fails 3 consecutive checks.
-
----
-
 ### S3 Bucket — Weather Data Object
 
 ![S3 Bucket](screenshots/s3-bucket.png)
 
 > `data/weather-latest.json` written by the background fetcher. S3 Versioning enabled, Block Public Access on, encrypted with SSE-S3. All EC2 traffic reaches S3 through the **VPC Gateway Endpoint** — never via public internet.
-
----
-
-### Auto Scaling Group — Active
-
-![Auto Scaling Group](screenshots/asg.png)
-
-> ASG `pakweather-asg`: Desired **2**, Min **2**, Max **6**. Target tracking policy scales on CPU ≥ 50%. Instances launch into private subnets and register automatically with the target group.
-
----
-
-### Health Endpoint — JSON Response
-
-![Health Endpoint](screenshots/health-endpoint.png)
-
-> `GET /health` returns `HTTP 200` with instance metadata. The ALB polls this every 15 seconds to determine routing eligibility.
 
 ---
 
